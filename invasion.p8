@@ -11,19 +11,10 @@ function _init()
 	enemies={}
 	stars={}
 	init_stars()
-	
-	add(enemies,make_enemy(60,60,3))
-	add(enemies,make_enemy(70,60,3))
-	add(enemies,make_enemy(80,60,3))
-	add(enemies,make_enemy(90,60,3))
-	add(enemies,make_enemy(65,50,4))
-	add(enemies,make_enemy(75,50,4))
-	add(enemies,make_enemy(85,50,4))
-	add(enemies,make_enemy(70,40,5))
-	add(enemies,make_enemy(80,40,5))
 end
 
 function _update()
+	update_armada()
 	update_stars()
 	ship:update()
  handle_shoot()
@@ -89,7 +80,6 @@ function make_bullet(x,y,v)
 	b.y=y
 	b.v=v
 
-	-- param is ship
 	b.update=function(self)
 		if self.y < 0 then
  		del(bullets,self)
@@ -127,6 +117,7 @@ end
 -- enemy
 enemy_progress=0
 enemy_rate=0.01
+fuzziness=.1
 
 function make_enemy(x,y,s)
 	local enemy={}
@@ -139,11 +130,16 @@ function make_enemy(x,y,s)
 	enemy.sprite=s
 	
 	enemy.is_hit=function(self,x,y)
-		base = self.x+self.hx+get_enemy_offset()
+		base=
+			self.x+
+			self.hx+
+			get_enemy_offset()
+		
 		return
-			y==self.y and
-			(x>=base and
-			x<base+self.hw)
+			y>=self.y and
+			y<=self.y+5 and -- not sure why i had to do this
+			x>=base and
+			x<=base+self.hh
 	end
 	
 	enemy.draw=function(self)
@@ -168,7 +164,23 @@ function draw_enemies()
 end
 
 function get_enemy_offset()
- return 15*sin(enemy_progress)
+ return flr(15*sin(enemy_progress))
+end
+
+function spawn_armada(x,y)
+	add(enemies,make_enemy(x,y,5))
+	add(enemies,make_enemy(x+5,y+10,4))
+	add(enemies,make_enemy(x-5,y+10,4))
+	add(enemies,make_enemy(x-10,y+20,3))
+	add(enemies,make_enemy(x,y+20,3))
+	add(enemies,make_enemy(x+10,y+20,3))
+end
+
+function update_armada()
+	if count(enemies) == 0 then
+		spawn_armada(30,30)
+		spawn_armada(90,30)
+	end
 end
 -->8
 -- stars
