@@ -4,6 +4,7 @@ __lua__
 -- main
 res=120
 num_of_stars=200
+score=0
 
 function _init()
 	ship=make_ship()
@@ -27,6 +28,7 @@ function _draw()
 	ship:draw()
 	draw_bullets()
 	draw_enemies()
+	print(score)
 end
 
 function handle_shoot()
@@ -99,6 +101,7 @@ function update_bullets()
 	for b in all(bullets) do
 		for e in all(enemies) do
 			if e:is_hit(b.x,b.y) then
+				score+=e.points
 				del(bullets,b)
 				del(enemies,e)
 			end
@@ -119,8 +122,9 @@ enemy_progress=0
 enemy_rate=0.01
 fuzziness=.1
 
-function make_enemy(x,y,s)
+function make_enemy(x,y,s,p)
 	local enemy={}
+	enemy.points=p
 	enemy.x=x
 	enemy.y=y
 	enemy.hx=-2
@@ -168,12 +172,12 @@ function get_enemy_offset()
 end
 
 function spawn_armada(x,y)
-	add(enemies,make_enemy(x,y,5))
-	add(enemies,make_enemy(x+5,y+10,4))
-	add(enemies,make_enemy(x-5,y+10,4))
-	add(enemies,make_enemy(x-10,y+20,3))
-	add(enemies,make_enemy(x,y+20,3))
-	add(enemies,make_enemy(x+10,y+20,3))
+	add(enemies,make_enemy(x,y,5,50))
+	add(enemies,make_enemy(x+5,y+10,4,25))
+	add(enemies,make_enemy(x-5,y+10,4,25))
+	add(enemies,make_enemy(x-10,y+20,3,10))
+	add(enemies,make_enemy(x,y+20,3,10))
+	add(enemies,make_enemy(x+10,y+20,3,10))
 end
 
 function update_armada()
